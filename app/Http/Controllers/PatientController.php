@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Http\Requests\StorePatientRequest;
-use App\Models\Models\Patient;
-use App\Models\Models\PatientDocument;
+use App\Http\Requests\StorePatientRequest;
+use App\Models\Patient;
+use App\Models\PatientDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 

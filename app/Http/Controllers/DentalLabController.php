@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Models\DentalLab;
-use App\Models\Models\Patient;
+use App\Models\DentalLab;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class DentalLabController extends Controller

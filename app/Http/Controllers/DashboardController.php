@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Models\Appointment;
-use App\Models\Models\InventoryItem;
-use App\Models\Models\Installment;
-use App\Models\Models\Patient;
-use App\Models\Models\Voucher;
+use App\Models\Appointment;
+use App\Models\InventoryItem;
+use App\Models\Installment;
+use App\Models\Patient;
+use App\Models\Voucher;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller

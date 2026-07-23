@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Models\InventoryItem;
+use App\Models\InventoryItem;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller

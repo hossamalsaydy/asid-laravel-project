@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Http\Requests\StoreAppointmentRequest;
-use App\Models\Models\Appointment;
-use App\Models\Models\Patient;
+use App\Http\Requests\StoreAppointmentRequest;
+use App\Models\Appointment;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller

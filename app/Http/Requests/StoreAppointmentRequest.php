@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Rules\NotDuringNapTime;
+use App\Rules\NotDuringNapTime;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**

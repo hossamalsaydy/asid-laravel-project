@@ -1,58 +1,100 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# نظام اسيد (ASID) — نظام إدارة عيادة أسنان مصغر
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+نظام ERP بسيط ومستقر لإدارة عيادة أسنان، مصمم لمستخدم واحد فقط (الطبيب/المدير)،
+ومبني ليعمل محلياً أولاً (Offline-First) مع مزامنة اختيارية إلى سيرفر سحابي.
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 1. خطوات التركيب
 
 ```bash
-composer require laravel/boost --dev
+composer install
+cp .env.example .env
+php artisan key:generate
 
-php artisan boost:install
+# إعداد قاعدة البيانات (MySQL) في .env ثم:
+php artisan migrate
+php artisan db:seed              # ينشئ حساب المدير الوحيد admin@asid.local
+
+# رابط تخزين الملفات العامة (ضروري لعرض صور الأشعة/المستندات)
+php artisan storage:link
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+بعد أول تسجيل دخول بحساب `admin@asid.local` (كلمة المرور الافتراضية داخل
+`DatabaseSeeder.php`)، **يجب تغييرها فوراً**.
 
-## Contributing
+## 2. الخط العربي (Tajawal) - Offline
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+ضع ملفات خط Tajawal (woff2) داخل:
+```
+public/assets/fonts/tajawal/
+```
+مع ملف `tajawal.css` يعرّف `@font-face` بمسارات محلية (وليس Google Fonts)،
+حتى يعمل النظام بالكامل دون إنترنت.
 
-## Code of Conduct
+## 3. هيكل الموديولات المبنية
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| الموديول | Model | Controller | المسارات الأساسية |
+|---|---|---|---|
+| المرضى | `Patient`, `PatientDocument` | `PatientController` | `/patients` |
+| المواعيد | `Appointment` | `AppointmentController` | `/appointments` |
+| مخطط الأسنان | `DentalTreatment` | `DentalTreatmentController` | `/patients/{id}/dental-chart` |
+| المعامل الخارجية | `DentalLab` | `DentalLabController` | `/labs` |
+| الفواتير | `Invoice`, `InvoiceItem` | `InvoiceController` | `/invoices` |
+| الأقساط | `Installment`, `InstallmentPayment` | `InstallmentController` | `/installments` |
+| السندات | `Voucher` | `VoucherController` | `/vouchers` |
+| المخزن | `InventoryItem`, `InventoryTransaction` | `InventoryController` | `/inventory` |
 
-## Security Vulnerabilities
+## 4. آلية المزامنة (Offline-First Sync)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+كل جدول يحتوي `local_id` (UUID) + `is_synced` + `synced_at` عبر
+`App\Traits\HasSyncFields` الذي يولّد `local_id` تلقائياً عند الإنشاء.
 
-## License
+نقاط نهاية API (`routes/api.php`، محمية بـ `auth:sanctum`):
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **رفع (Push):** `POST /api/sync/{table}/push`
+  ```json
+  { "records": [ { "local_id": "uuid...", "name": "...", ... } ] }
+  ```
+  يقوم السيرفر بعمل `updateOrCreate` بالاعتماد على `local_id` (وليس `id`
+  التسلسلي، لأنه يختلف بين كل جهاز والسيرفر)، ويردّ بقائمة `local_id` التي
+  تمت مزامنتها بنجاح ليعلّمها الجهاز المحلي كمُزامَنة.
+
+- **تحميل (Pull):** `GET /api/sync/{table}/pull?after=2026-07-01T00:00:00Z`
+  يعيد كل السجلات التي تغيّرت بعد ذلك التاريخ، مع `server_time` لاستخدامه
+  كنقطة بداية في طلب المزامنة التالي.
+
+الجداول المسموح مزامنتها محددة بقائمة بيضاء داخل `SyncController` لمنع أي
+وصول لجداول غير مصرح بها.
+
+⚠️ **تنبيه Laravel 11+:** تأكد من تسجيل `routes/api.php` داخل
+`bootstrap/app.php`:
+```php
+->withRouting(
+    web: __DIR__.'/routes/web.php',
+    api: __DIR__.'/routes/api.php',
+    commands: __DIR__.'/routes/console.php',
+    health: '/up',
+)
+```
+كما يجب تثبيت Laravel Sanctum (`composer require laravel/sanctum`) لإصدار
+Tokens للجهاز المحلي عند طلب المزامنة.
+
+## 5. منع الحجز وقت القيلولة
+
+يُطبَّق عبر `App\Rules\NotDuringNapTime` (مُستخدمة داخل
+`StoreAppointmentRequest`)، وتمنع أي وقت موعد بين الساعة 1:00 ظهراً و4:00
+عصراً. لتغيير حدود الفترة، عدّل `$napStartHour` / `$napEndHour` داخل الـ Rule.
+
+## 6. وضع الستر (Privacy Mode)
+
+مُفعّل عبر JavaScript في `layouts/admin.blade.php`. أي عنصر في أي واجهة يحمل
+`class="sensitive-data"` (أسماء المرضى، الهواتف، صور الأشعة...) يُطمس تلقائياً
+عند تفعيل الزر في الشريط العلوي، وتُحفظ الحالة في `localStorage`.
+
+## 7. ما يحتاج استكماله يدوياً
+
+- **نظام المصادقة (Login):** لم يتم بناء شاشة تسجيل الدخول ضمن هذه الحزمة
+  لتبسيط النطاق؛ نظراً لأن النظام لمستخدم واحد، يمكن استخدام Laravel
+  Breeze/Fortify بأبسط إعداد ممكن (بدون تسجيل حسابات جديدة).
+- **Laravel Sanctum:** مطلوب لتفعيل `auth:sanctum` في `routes/api.php`.
+- تأكد من وجود جدول `users` القياسي في مشروع Laravel (موجود افتراضياً عند
+  إنشاء أي مشروع Laravel جديد).

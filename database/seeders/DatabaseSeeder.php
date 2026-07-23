@@ -3,23 +3,27 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
+/**
+ * DatabaseSeeder
+ * ===============
+ * نظام اسيد مصمم لمستخدم واحد فقط (مدير النظام / طبيب الأسنان).
+ * هذا الـ Seeder ينشئ هذا الحساب الوحيد عند إعداد النظام لأول مرة.
+ *
+ * للتشغيل: php artisan db:seed
+ */
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@asid.local'],
+            [
+                'name'     => 'مدير العيادة',
+                'password' => Hash::make('change-this-password'), // غيّر كلمة المرور فوراً بعد أول تسجيل دخول
+            ]
+        );
     }
 }
