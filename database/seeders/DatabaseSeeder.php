@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@asid.local'],
             [
                 'name'     => 'مدير العيادة',
-                'password' => Hash::make('change-this-password'), // غيّر كلمة المرور فوراً بعد أول تسجيل دخول
+                'password' => Hash::make('12345678'), // غيّر كلمة المرور فوراً بعد أول تسجيل دخول
             ]
         );
     }
