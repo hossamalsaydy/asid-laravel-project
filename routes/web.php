@@ -88,10 +88,10 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::get('/run-seed', function () {
     try {
-        Artisan::call('db:seed', ['--force' => true]);
-        return 'تم ترحيل بيانات الدخول وحقن الـ Seeders بنجاح!';
+        // هذا الأمر يمسح الجداول القديمة ويعيد بناءها مع تشغيل السييدر الجديد
+        Artisan::call('migrate:fresh', ['--force' => true, '--seed' => true]);
+        return 'تم تحديث قاعدة البيانات وتشغيل الـ Seeder بالبيانات الجديدة بنجاح!';
     } catch (\Exception $e) {
-        return 'حدث خطأ أثناء الترحيل: ' . $e->getMessage();
+        return 'حدث خطأ أثناء التحديث: ' . $e->getMessage();
     }
 });
-
