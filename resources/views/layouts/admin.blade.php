@@ -372,6 +372,17 @@
             vertical-align: middle;
         }
         table.data-table tbody tr:hover { background: #FAFBFA; }
+        
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 1rem;
+        }
+        
+        .table-responsive table {
+            min-width: 600px;
+        }
 
         .badge {
             display: inline-block;

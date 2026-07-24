@@ -37,25 +37,27 @@
             @if($todayAppointments->isEmpty())
                 <div class="empty-state">لا توجد مواعيد لهذا اليوم</div>
             @else
-                <table class="data-table">
-                    <thead>
-                        <tr><th>الوقت</th><th>المريض</th><th>الفترة</th><th>الحالة</th></tr>
-                    </thead>
-                    <tbody>
-                        @foreach($todayAppointments as $appt)
-                            <tr>
-                                <td>{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</td>
-                                <td class="sensitive-data">{{ $appt->patient->name }}</td>
-                                <td>{{ $appt->period_label }}</td>
-                                <td>
-                                    <span class="badge {{ $appt->status === 'completed' ? 'badge-green' : ($appt->status === 'cancelled' ? 'badge-red' : 'badge-gold') }}">
-                                        {{ $appt->status_label }}
-                                    </span>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>الوقت</th><th>المريض</th><th>الفترة</th><th>الحالة</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach($todayAppointments as $appt)
+                                <tr>
+                                    <td>{{ \Carbon\Carbon::parse($appt->appointment_time)->format('h:i A') }}</td>
+                                    <td class="sensitive-data">{{ $appt->patient->name }}</td>
+                                    <td>{{ $appt->period_label }}</td>
+                                    <td>
+                                        <span class="badge {{ $appt->status === 'completed' ? 'badge-green' : ($appt->status === 'cancelled' ? 'badge-red' : 'badge-gold') }}">
+                                            {{ $appt->status_label }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             @endif
         </div>
 
@@ -69,18 +71,20 @@
             @if($lowStockItems->isEmpty())
                 <div class="empty-state">لا توجد أصناف قاربت على النفاد 👍</div>
             @else
-                <table class="data-table">
-                    <thead><tr><th>الصنف</th><th>الكمية الحالية</th><th>الحد الأدنى</th></tr></thead>
-                    <tbody>
-                        @foreach($lowStockItems as $item)
-                            <tr>
-                                <td>{{ $item->name }}</td>
-                                <td><span class="badge badge-red">{{ $item->current_quantity }} {{ $item->unit }}</span></td>
-                                <td>{{ $item->minimum_quantity }} {{ $item->unit }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead><tr><th>الصنف</th><th>الكمية الحالية</th><th>الحد الأدنى</th></tr></thead>
+                        <tbody>
+                            @foreach($lowStockItems as $item)
+                                <tr>
+                                    <td>{{ $item->name }}</td>
+                                    <td><span class="badge badge-red">{{ $item->current_quantity }} {{ $item->unit }}</span></td>
+                                    <td>{{ $item->minimum_quantity }} {{ $item->unit }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             @endif
         </div>
     </div>
@@ -95,18 +99,20 @@
         @if($overdueInstallments->isEmpty())
             <div class="empty-state">لا توجد دفعات متأخرة حالياً 👍</div>
         @else
-            <table class="data-table">
-                <thead><tr><th>المريض</th><th>المتبقي</th><th>إجراء</th></tr></thead>
-                <tbody>
-                    @foreach($overdueInstallments as $inst)
-                        <tr>
-                            <td class="sensitive-data">{{ $inst->patient->name }}</td>
-                            <td>{{ number_format($inst->remaining_amount, 0) }}</td>
-                            <td><a href="{{ route('installments.show', $inst) }}" class="btn btn-accent btn-sm">متابعة</a></td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>المريض</th><th>المتبقي</th><th>إجراء</th></tr></thead>
+                    <tbody>
+                        @foreach($overdueInstallments as $inst)
+                            <tr>
+                                <td class="sensitive-data">{{ $inst->patient->name }}</td>
+                                <td>{{ number_format($inst->remaining_amount, 0) }}</td>
+                                <td><a href="{{ route('installments.show', $inst) }}" class="btn btn-accent btn-sm">متابعة</a></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 

@@ -17,7 +17,8 @@
         @if($patients->isEmpty())
             <div class="empty-state">لا يوجد مرضى مسجّلون بعد</div>
         @else
-            <table class="data-table">
+            <div class="table-responsive">
+                <table class="data-table">
                 <thead>
                     <tr>
                         <th>الاسم</th><th>العمر</th><th>الجنس</th><th>الهاتف</th><th>ملاحظات طبية</th><th>إجراءات</th>
@@ -55,8 +56,8 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
-
+                            </table>
+            </div>
             <div class="pagination-wrapper">{{ $patients->links() }}</div>
         @endif
     </div>
