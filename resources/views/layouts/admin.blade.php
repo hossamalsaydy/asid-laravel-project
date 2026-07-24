@@ -435,14 +435,20 @@
                 <span>اسيد | ASID</span>
             </div>
             <ul class="sidebar-nav">
-                <li><a href="{{ route('dashboard') ?? '#' }}">🏠 لوحة التحكم</a></li>
-                <li><a href="#">🧑‍⚕️ المرضى</a></li>
-                <li><a href="#">📅 المواعيد</a></li>
-                <li><a href="#">🦷 مخطط الأسنان والمعالجات</a></li>
-                <li><a href="#">🏭 المعامل الخارجية</a></li>
-                <li><a href="#">🧾 الفواتير والأقساط</a></li>
-                <li><a href="#">💵 السندات</a></li>
-                <li><a href="#">📦 المخزن الطبي</a></li>
+                <li><a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">🏠 لوحة التحكم</a></li>
+                <li><a href="{{ route('patients.index') }}" class="{{ request()->routeIs('patients.*') ? 'active' : '' }}">🧑‍⚕️ المرضى</a></li>
+                <li><a href="{{ route('appointments.index') }}" class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">📅 المواعيد</a></li>
+                <li><a href="{{ route('labs.index') }}" class="{{ request()->routeIs('labs.*') ? 'active' : '' }}">🏭 المعامل الخارجية</a></li>
+                <li><a href="{{ route('invoices.index') }}" class="{{ request()->routeIs('invoices.*') ? 'active' : '' }}">🧾 الفواتير</a></li>
+                <li><a href="{{ route('installments.index') }}" class="{{ request()->routeIs('installments.*') ? 'active' : '' }}">💳 الأقساط</a></li>
+                <li><a href="{{ route('vouchers.index') }}" class="{{ request()->routeIs('vouchers.*') ? 'active' : '' }}">💵 السندات</a></li>
+                <li><a href="{{ route('inventory.index') }}" class="{{ request()->routeIs('inventory.*') ? 'active' : '' }}">📦 المخزن الطبي</a></li>
+                <li style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" style="color: #ffcccc;">🚪 تسجيل الخروج</a>
+                    </form>
+                </li>
             </ul>
         </aside>
 
