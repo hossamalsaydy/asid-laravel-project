@@ -14,5 +14,6 @@ RUN composer install --no-dev --optimize-autoloader
 RUN touch /var/www/html/database/database.sqlite && chmod -R 777 /var/www/html/database
 
 # تشغيل أوامر التهجير عند الإقلاع
-CMD ["php-fpm"]
+CMD ["/init"]
+
 
