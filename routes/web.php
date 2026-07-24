@@ -83,3 +83,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/run-seed', function () {
+    try {
+        Artisan::call('db:seed', ['--force' => true]);
+        return 'تم ترحيل بيانات الدخول وحقن الـ Seeders بنجاح!';
+    } catch (\Exception $e) {
+        return 'حدث خطأ أثناء الترحيل: ' . $e->getMessage();
+    }
+});
+
