@@ -1,4 +1,4 @@
-FROM richarvey/nginx-php-fpm:latest
+FROM richarvey/nginx-php-fpm:php83
 
 # نسخ كود المشروع بالكامل إلى الحاوية
 COPY . /var/www/html
