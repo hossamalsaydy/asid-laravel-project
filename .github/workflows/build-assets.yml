@@ -1,9 +1,11 @@
 name: Build Vite Assets
 
 on:
+  workflow_dispatch:  # <-- هذا السطر الجديد الذي يسمح بالتشغيل اليدوي
   push:
     branches:
-      - master # أو قم بتغييره إلى main إذا كان اسم الفرع الرئيسي عندك main
+      - master
+ # أو قم بتغييره إلى main إذا كان اسم الفرع الرئيسي عندك main
 
 jobs:
   build:
