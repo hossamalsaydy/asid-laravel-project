@@ -1,0 +1,30 @@
+name: Build Vite Assets
+
+on:
+  push:
+    branches:
+      - master # أو قم بتغييره إلى main إذا كان اسم الفرع الرئيسي عندك main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-size: 20
+
+      - name: Install dependencies and build assets
+        run: |
+          npm install
+          npm run build
+
+      - name: Commit and push compiled assets
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Automated Vite build [skip ci]"
+          file_pattern: 'public/build/*'
