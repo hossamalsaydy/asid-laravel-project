@@ -18,6 +18,6 @@ RUN touch /var/www/html/database/database.sqlite && \
 
 # الأمر الرسمي والافتراضي لتشغيل خادم الويب Nginx و PHP معاً
 # تشغيل أمر التهجير وحقن البيانات التجريبية معاً عند الإقلاع
-CMD php artisan migrate --force && php artisan db:seed --force && /init
+CMD ["sh", "-c", "php artisan migrate --force && php artisan db:seed --force && /init"]
 
 
