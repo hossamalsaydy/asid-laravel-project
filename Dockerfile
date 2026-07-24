@@ -17,5 +17,7 @@ RUN touch /var/www/html/database/database.sqlite && \
     chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
 # الأمر الرسمي والافتراضي لتشغيل خادم الويب Nginx و PHP معاً
-CMD ["/init"]
+# تشغيل أمر التهجير وحقن البيانات التجريبية معاً عند الإقلاع
+CMD php artisan migrate --force && php artisan db:seed --force && /init
+
 
