@@ -74,3 +74,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('inventory/{item}/transactions', [InventoryController::class, 'storeTransaction'])->name('inventory.transactions.store');
     Route::delete('inventory/{item}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
 });
+
+// -------------------- مسارات التوثيق (Breeze) --------------------
+require __DIR__.'/auth.php';
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+});
