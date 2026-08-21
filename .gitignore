@@ -17,6 +17,7 @@
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
+/mobile/www/runtime-config.js
 /storage/*.key
 /storage/pail
 /vendor

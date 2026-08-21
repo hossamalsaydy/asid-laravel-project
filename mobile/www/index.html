@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f172a" />
+    <title>ASID Clinic</title>
+    <style>
+        :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+        body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0f172a; color: #e2e8f0; }
+        main { width: min(90vw, 28rem); text-align: center; }
+        .spinner { width: 2rem; height: 2rem; margin: 1.5rem auto; border: .25rem solid #334155; border-top-color: #38bdf8; border-radius: 50%; animation: spin 1s linear infinite; }
+        .error { display: none; color: #fecaca; line-height: 1.8; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<main>
+    <h1>ASID Clinic</h1>
+    <div class="spinner" aria-hidden="true"></div>
+    <p>جارٍ الاتصال بنظام العيادة…</p>
+    <p id="error" class="error">تعذر الوصول إلى خادم العيادة. تحقق من الاتصال وإعداد MOBILE_BACKEND_URL.</p>
+</main>
+<script src="./runtime-config.js"></script>
+<script>
+    (function () {
+        const configuredUrl = window.__ASID_BACKEND_URL__;
+        const target = configuredUrl ? configuredUrl.replace(/\/$/, '') : '';
+        if (!target) {
+            document.querySelector('#error').style.display = 'block';
+            document.querySelector('main > p:not(.error)').textContent = 'لم يتم ضبط عنوان خادم Laravel بعد.';
+            return;
+        }
+        window.location.replace(target + '/');
+    }());
+</script>
+</body>
+</html>

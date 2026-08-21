@@ -30,7 +30,20 @@ public/assets/fonts/tajawal/
 مع ملف `tajawal.css` يعرّف `@font-face` بمسارات محلية (وليس Google Fonts)،
 حتى يعمل النظام بالكامل دون إنترنت.
 
-## 3. هيكل الموديولات المبنية
+## 3. تطبيق الموبايل عبر Capacitor
+
+تمت إضافة مشروع Capacitor لمنصة Android داخل مجلد `android/`. واجهة Laravel هنا Server-Rendered، لذلك يستخدم التطبيق mobile shell محلياً ثم يوجّه WebView إلى خادم Laravel المنشور.
+
+```bash
+export MOBILE_BACKEND_URL="https://clinic.example.com"
+npm install
+npm run build:mobile
+npm run cap:open:android
+```
+
+للتفاصيل ومتطلبات Android وتحديثات الخادم، راجع [`docs/mobile-capacitor.md`](docs/mobile-capacitor.md). لا تُضمّن عنوان خادم خاصاً داخل Git؛ يتم توليد `mobile/www/runtime-config.js` أثناء البناء وهو متجاهل في `.gitignore`.
+
+## 4. هيكل الموديولات المبنية
 
 | الموديول | Model | Controller | المسارات الأساسية |
 |---|---|---|---|
@@ -43,7 +56,7 @@ public/assets/fonts/tajawal/
 | السندات | `Voucher` | `VoucherController` | `/vouchers` |
 | المخزن | `InventoryItem`, `InventoryTransaction` | `InventoryController` | `/inventory` |
 
-## 4. آلية المزامنة (Offline-First Sync)
+## 5. آلية المزامنة (Offline-First Sync)
 
 كل جدول يحتوي `local_id` (UUID) + `is_synced` + `synced_at` عبر
 `App\Traits\HasSyncFields` الذي يولّد `local_id` تلقائياً عند الإنشاء.
@@ -78,19 +91,19 @@ public/assets/fonts/tajawal/
 كما يجب تثبيت Laravel Sanctum (`composer require laravel/sanctum`) لإصدار
 Tokens للجهاز المحلي عند طلب المزامنة.
 
-## 5. منع الحجز وقت القيلولة
+## 6. منع الحجز وقت القيلولة
 
 يُطبَّق عبر `App\Rules\NotDuringNapTime` (مُستخدمة داخل
 `StoreAppointmentRequest`)، وتمنع أي وقت موعد بين الساعة 1:00 ظهراً و4:00
 عصراً. لتغيير حدود الفترة، عدّل `$napStartHour` / `$napEndHour` داخل الـ Rule.
 
-## 6. وضع الستر (Privacy Mode)
+## 7. وضع الستر (Privacy Mode)
 
 مُفعّل عبر JavaScript في `layouts/admin.blade.php`. أي عنصر في أي واجهة يحمل
 `class="sensitive-data"` (أسماء المرضى، الهواتف، صور الأشعة...) يُطمس تلقائياً
 عند تفعيل الزر في الشريط العلوي، وتُحفظ الحالة في `localStorage`.
 
-## 7. ما يحتاج استكماله يدوياً
+## 8. ما يحتاج استكماله يدوياً
 
 - **نظام المصادقة (Login):** لم يتم بناء شاشة تسجيل الدخول ضمن هذه الحزمة
   لتبسيط النطاق؛ نظراً لأن النظام لمستخدم واحد، يمكن استخدام Laravel

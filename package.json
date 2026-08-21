@@ -4,9 +4,15 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
+        "build:mobile": "vite build && npm run prepare:mobile && cap sync",
+        "prepare:mobile": "node scripts/prepare-mobile.mjs",
+        "cap:sync": "npm run prepare:mobile && cap sync",
+        "cap:open:android": "cap open android",
+        "cap:run:android": "cap run android",
         "dev": "vite"
     },
     "devDependencies": {
+        "@capacitor/cli": "^8.5.0",
         "@tailwindcss/forms": "^0.5.2",
         "@tailwindcss/vite": "^4.0.0",
         "alpinejs": "^3.4.2",
@@ -15,6 +21,11 @@
         "laravel-vite-plugin": "^3.1",
         "postcss": "^8.4.31",
         "tailwindcss": "^3.1.0",
+        "typescript": "^5.9.3",
         "vite": "^8.0.0"
+    },
+    "dependencies": {
+        "@capacitor/android": "^8.5.0",
+        "@capacitor/core": "^8.5.0"
     }
 }
