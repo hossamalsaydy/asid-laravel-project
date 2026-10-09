@@ -8,6 +8,7 @@ use App\Http\Controllers\InstallmentController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('patients', PatientController::class);
     Route::post('patients/{patient}/documents', [PatientController::class, 'uploadDocument'])
         ->name('patients.documents.upload');
+    Route::get('patients/{patient}/documents/{document}', [PatientController::class, 'showDocument'])
+        ->name('patients.documents.show');
 
     // -------------------- المواعيد --------------------
     Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
@@ -79,19 +82,7 @@ Route::middleware(['auth'])->group(function () {
 require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-use Illuminate\Support\Facades\Artisan;
-
-Route::get('/run-seed', function () {
-    try {
-        // هذا الأمر يمسح الجداول القديمة ويعيد بناءها مع تشغيل السييدر الجديد
-        Artisan::call('migrate:fresh', ['--force' => true, '--seed' => true]);
-        return 'تم تحديث قاعدة البيانات وتشغيل الـ Seeder بالبيانات الجديدة بنجاح!';
-    } catch (\Exception $e) {
-        return 'حدث خطأ أثناء التحديث: ' . $e->getMessage();
-    }
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

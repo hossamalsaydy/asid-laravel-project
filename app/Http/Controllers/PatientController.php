@@ -24,7 +24,7 @@ class PatientController extends Controller
 
     public function create()
     {
-        return view('patients.form', ['patient' => new Patient()]);
+        return view('patients.form', ['patient' => new Patient]);
     }
 
     public function store(StorePatientRequest $request)
@@ -65,24 +65,48 @@ class PatientController extends Controller
         return redirect()->route('patients.index')->with('success', 'تم حذف المريض بنجاح.');
     }
 
+    public function showDocument(Patient $patient, PatientDocument $document)
+    {
+        abort_unless($document->patient_id === $patient->id, 404);
+
+        $disk = Storage::disk('private');
+        abort_unless($disk->exists($document->file_path), 404);
+
+        $path = $disk->path($document->file_path);
+        $mimeType = $disk->mimeType($document->file_path) ?: 'application/octet-stream';
+
+        return response()->stream(function () use ($path): void {
+            $stream = fopen($path, 'rb');
+
+            if ($stream !== false) {
+                fpassthru($stream);
+                fclose($stream);
+            }
+        }, 200, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'private, no-store, max-age=0',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
     /**
      * رفع مستند/صورة أشعة للمريض (يُحفظ ضمن أرشيف المريض، ويخضع لوضع الستر في الواجهة).
      */
     public function uploadDocument(Request $request, Patient $patient)
     {
         $request->validate([
-            'file'          => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
+            'file' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:10240'],
             'document_type' => ['required', 'in:xray,before,after,other'],
-            'description'   => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $path = $request->file('file')->store('patients/' . $patient->id . '/documents', 'public');
+        $path = $request->file('file')->store('patients/'.$patient->id.'/documents', 'private');
 
         PatientDocument::create([
-            'patient_id'    => $patient->id,
-            'file_path'     => $path,
+            'patient_id' => $patient->id,
+            'file_path' => $path,
             'document_type' => $request->document_type,
-            'description'   => $request->description,
+            'description' => $request->description,
         ]);
 
         return back()->with('success', 'تم رفع المستند بنجاح.');

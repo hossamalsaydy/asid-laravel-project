@@ -51,7 +51,12 @@
         <div style="display:flex; gap:14px; flex-wrap:wrap;">
             @forelse($patient->documents as $doc)
                 <div class="sensitive-data" style="width:150px; text-align:center;">
-                    <img src="{{ asset('storage/' . $doc->file_path) }}" style="width:150px; height:110px; object-fit:cover; border-radius:8px; border:1px solid var(--border-color);">
+                    @php($extension = strtolower(pathinfo($doc->file_path, PATHINFO_EXTENSION)))
+                    @if(in_array($extension, ['jpg', 'jpeg', 'png'], true))
+                        <img src="{{ route('patients.documents.show', [$patient, $doc]) }}" alt="مستند المريض" style="width:150px; height:110px; object-fit:cover; border-radius:8px; border:1px solid var(--border-color);">
+                    @else
+                        <a href="{{ route('patients.documents.show', [$patient, $doc]) }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">عرض المستند</a>
+                    @endif
                     <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">{{ $doc->description ?? $doc->document_type }}</div>
                 </div>
             @empty

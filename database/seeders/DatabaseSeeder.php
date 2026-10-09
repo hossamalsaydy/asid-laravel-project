@@ -5,25 +5,34 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use RuntimeException;
 
-/**
- * DatabaseSeeder
- * ===============
- * نظام اسيد مصمم لمستخدم واحد فقط (مدير النظام / طبيب الأسنان).
- * هذا الـ Seeder ينشئ هذا الحساب الوحيد عند إعداد النظام لأول مرة.
- *
- * للتشغيل: php artisan db:seed
- */
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::firstOrCreate(
-            ['email' => 'admin@asid.local'],
-            [
-                'name'     => 'مدير العيادة',
-                'password' => Hash::make('12345678'), // غيّر كلمة المرور فوراً بعد أول تسجيل دخول
-            ]
-        );
+        $email = config('clinic.admin_email', 'admin@asid.local');
+
+        if (User::where('email', $email)->exists()) {
+            $this->command?->info("Clinic administrator {$email} already exists; no password was changed.");
+
+            return;
+        }
+
+        $password = config('clinic.admin_password');
+
+        if (! is_string($password) || strlen($password) < 16) {
+            throw new RuntimeException(
+                'Set a unique ADMIN_PASSWORD of at least 16 characters in .env before creating the clinic administrator.'
+            );
+        }
+
+        User::create([
+            'name' => 'مدير العيادة',
+            'email' => $email,
+            'password' => Hash::make($password),
+        ]);
+
+        $this->command?->info("Clinic administrator {$email} was created.");
     }
 }

@@ -10,16 +10,34 @@ composer install
 cp .env.example .env
 php artisan key:generate
 
-# إعداد قاعدة البيانات (MySQL) في .env ثم:
+# إعداد قاعدة البيانات في .env، وتعيين ADMIN_PASSWORD إلى قيمة عشوائية
+# وفريدة لا تقل عن 16 محرفاً قبل إنشاء المدير، ثم:
 php artisan migrate
-php artisan db:seed              # ينشئ حساب المدير الوحيد admin@asid.local
+php artisan db:seed              # ينشئ المدير من ADMIN_EMAIL وADMIN_PASSWORD
 
-# رابط تخزين الملفات العامة (ضروري لعرض صور الأشعة/المستندات)
-php artisan storage:link
+# بعد إنشاء المدير، احذف ADMIN_PASSWORD من .env ثم أعد بناء إعدادات Laravel.
+php artisan optimize:clear
 ```
 
-بعد أول تسجيل دخول بحساب `admin@asid.local` (كلمة المرور الافتراضية داخل
-`DatabaseSeeder.php`)، **يجب تغييرها فوراً**.
+لا توجد كلمة مرور افتراضية. التسجيل العام معطّل ويُنشأ حساب المدير عبر Seeder
+فقط بعد ضبط كلمة مرور قوية. لا تنفّذ `php artisan storage:link` لملفات المرضى؛
+تُحفظ المستندات الجديدة في قرص خاص وتُعرض عبر مسار يتطلب تسجيل الدخول.
+
+إذا كان لديك تثبيت سابق يحوي مستندات في `storage/app/public`، خذ نسخة احتياطية
+ثم نفّذ `php artisan patients:documents-secure` لنقلها بأمان إلى التخزين الخاص.
+بعد نجاح الأمر، أزل رابط `public/storage` إن كان موجوداً، مثلاً:
+
+```bash
+if [ -L public/storage ]; then rm public/storage; fi
+```
+
+المسار القديم `/run-seed` أزيل؛ لا تستخدم `migrate:fresh` على قاعدة بيانات
+الإنتاج لأنه يحذف بياناتها.
+
+عند ترقية قاعدة قديمة، راجع جدول `users` يدوياً قبل إتاحة الموقع. إيقاف التسجيل
+لا يحذف الحسابات التي أُنشئت سابقاً، كما أن Seeder لا يغيّر كلمة مرور مدير موجود؛
+غيّر أي كلمة مرور افتراضية قديمة، وعطّل الحسابات غير المصرح بها بعد أخذ نسخة
+احتياطية.
 
 ## 2. الخط العربي (Tajawal) - Offline
 
